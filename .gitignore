@@ -23,3 +23,7 @@ go.work.sum
 
 # env file
 .env
+
+# prometheus config will have env specific values 
+prometheus.yml
+remote-write-password

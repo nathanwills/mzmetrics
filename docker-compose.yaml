@@ -1,0 +1,35 @@
+services:
+  # Go app service
+  go-app:
+    build: .
+    ports:
+      - "2112:2112"  # Expose port 2112 for Prometheus to scrape
+    environment:
+      - MZMETRICS_BIND=:2112
+      - MZMETRICS_AC_URL=${MZMETRICS_AC_URL}
+    networks:
+      - app-network
+
+  # Prometheus service
+  prometheus:
+    image: prom/prometheus:v2.29.1
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    secrets:
+      - remote-write-password
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml  
+    networks:
+      - app-network
+    depends_on:
+      - go-app
+
+networks:
+  app-network:
+    driver: bridge
+
+secrets:
+  remote-write-password:
+    file: ./remote-write-password
+
